@@ -1,15 +1,34 @@
-#include <wiringPi.h>
-#include <wiringPiI2C.h>
+#include <iostream>
+#include <fstream>
+#include <string>
 
-#define PIN_NUM 0 // WirePi_0 -> GPIO_17
+using namespace std;
 
-int main (void)
-{
-    wiringPiSetup ();
-    pinMode (PIN_NUM, OUTPUT);
-    for (;){
-        digitalWrite (PIN_NUM, HIGH) ; delay (500) ;
-        digitalWrite (PIN_NUM,  LOW) ; delay (500) ;
-    }
-    return PIN_NUM ;
+int main(int argc, char* argv[]){
+  // Open serial
+  string fname;
+  if(argc > 1){
+    fname = argc[1];
+  }else{
+    fname = "/dev/ttyUSB0";
+  }
+  fstream serial(fname);
+
+  // Verify serial is Open
+  if(serial.is_open()){
+    cout << "Successfully opened serial port." << endl;
+  }else{
+    cout << "Failed to open serial port \"" << fname <<"\". Aborting." << endl;
+    return -1; 
+  }
+
+  // Read from serial
+  char c;
+  for(;;){
+    serial >> c;
+    cout << "Got: " << c << endl;
+  }
+
+  // Exit (will never get here tho)
+  return 0;
 }
