@@ -1,0 +1,3 @@
+[submodule "submodules/Adafruit-Si4713-RPi"]
+	path = submodules/Adafruit-Si4713-RPi
+	url = https://github.com/aiguy110/Adafruit-Si4713-RPi
