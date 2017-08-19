@@ -1,0 +1,13 @@
+#!/bin/bash
+# Based off of https://playground.arduino.cc/Main/Headless
+SCREEN=3
+Xvfb :$SCREEN -nolisten tcp -screen :$SCREEN 1280x800x24 &
+xvfb="$!"
+
+MY_PATH="`dirname \"$0\"`"
+PWD=`pwd`
+cd $MY_PATH
+DISPLAY=:$SCREEN ./arduino $@
+cd $PWD
+
+kill -9 $xvfb
