@@ -5,31 +5,62 @@ import subprocess
 import signal
 import os
 
-playFile = "data/rickastley.mp3"
-playProc = None
-def killPlay():
-    global playProc
-    if playProc is not None:
-        pid = playProc.pid
+# Speaker Stuff
+speakerFile = "data/rickastley.mp3"
+speakerProc = None
+
+def startSpeaker():
+    global speakerProc
+    global speakerFile
+    speakerProc = subprocess.Popen(["mpg123", "-f", "20000", speakerFile], shell=False)
+
+def stopSpeaker():
+    global speakerProc
+    if speakerProc is not None:
+        pid = speakerProc.pid
         os.kill(pid, signal.SIGINT)
         print("Kill Music")
-    playProc=None
+    speakerProc=None
 
-with serial.Serial('/dev/ttyUSB0', 19200, timeout=100) as ser:
-    last_val=None
+# Figure out which mode to be in
+# partition2 -> speaker
+# partition3 -> transmitter
+# partition4 -> paper
+active_module=None
+with open('active_module') as f:
+    active_module = f.read()
+
+# Run main loop. Read button inputs.
+with serial.Serial('/dev/ttyUSB1', 19200, timeout=100) as ser:
+    last_led=None
     while True:
-        b = ser.read()
-        val = struct.unpack('b', b)[0]
-        if last_val is not None and val != last_val:
-            if val: # This means the lights just turned on
+        line = ser.readline()
+        led, button1, button2 = struct.unpack('???x', line)
+
+        # Check main input (the light sensor)
+        if last_led is not None and led != last_led:
+            if led: # This means the lights just turned on
                 print("Lights turned ON")
-                killPlay()    
-                playProc = subprocess.Popen(["mpg123", "-f", "20000", playFile], shell=False)
+                startSpeaker()
             else:
                 print("Lights turned OFF")
-                killPlay()
+                stopSpeaker()
+        last_led = led
 
-        last_val = val
+        # Check reset buttons
+        if button1:
+            if active_module == 'speaker':
+                print('Module "speaker" already loaded. Doing nothing.')
+            else:
+                print('Booting "speaker" module.')
+                os.system("sudo ./utils/reboot-to-partition 2")
+
+        if button2:
+            if active_module == 'transmitter':
+                print('Module "transmitter" already loaded. Doing nothing.')
+            else:
+                print('Booting "transmitter" module.')
+                os.system("sudo ./utils/reboot-to-partition 3")
 
 
         # print(val)
