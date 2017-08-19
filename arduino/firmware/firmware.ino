@@ -4,18 +4,19 @@ bool leds_on(){
 }
 
 void setup(){
-	Serial.begin(9600);
+	Serial.begin(19200);
 	pinMode(ledPin, INPUT);
 }
 
 void loop(){
-	for(;;){
+  for(;;){
     bool lightsOn = digitalRead(ledPin);
     if (lightsOn){
-      Serial.write('1');
+      Serial.write(1);
     }else{
-      Serial.write('0');
+      Serial.write(0);
     }
+    delay(10);
 	}
 	
 }
