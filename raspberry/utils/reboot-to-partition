@@ -2,8 +2,9 @@
 import os, sys
 
 # Get partion number from command line args
-if len(sys.argv) > 2:
+if len(sys.argv) != 2:
     print("Wrong number of arguments. Aborting...")
+    print("USAGE:\n> sudo ./reboot-to-partition <partition-number>\nWhere <partition-number> is 2, 3, or 4 (required for this particular SD partitioning)")
     exit()
 part_num = sys.argv[1]
 if part_num not in ['2', '3', '4']:
@@ -30,3 +31,6 @@ new_cmd = old_cmd[:i0+9] + new_uuid + old_cmd[i1:]
 f = open("/boot/cmdline.txt", "w")
 f.write(new_cmd)
 f.close()
+
+# Reboot
+os.system("reboot")
