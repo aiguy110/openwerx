@@ -33,6 +33,7 @@ with open('active_module') as f:
 
 # Get USB serial port
 port = glob.glob("/dev/ttyUSB*")[0]
+print('Opening serial port "{}"'.format(port)) 
 
 # Run main loop. Read button inputs.
 with serial.Serial(port, 19200, timeout=100) as ser:
