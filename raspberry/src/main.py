@@ -4,6 +4,7 @@ import struct
 import subprocess
 import signal
 import os
+import glob
 
 # Speaker Stuff
 speakerFile = "data/rickastley.mp3"
@@ -30,8 +31,11 @@ active_module=None
 with open('active_module') as f:
     active_module = f.read()
 
+# Get USB serial port
+port = glob.glob("/dev/ttyUSB*")[0]
+
 # Run main loop. Read button inputs.
-with serial.Serial('/dev/ttyUSB1', 19200, timeout=100) as ser:
+with serial.Serial(port, 19200, timeout=100) as ser:
     last_led=None
     while True:
         line = ser.readline()
