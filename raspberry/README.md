@@ -7,13 +7,7 @@ continue to run throughout the operation of the drone.
 ## Dependencies
 * mpg123 (`sudo apt-get install mpg123`)
 * [Adafruit Speaker Bonnet Software](https://learn.adafruit.com/adafruit-speaker-bonnet-for-raspberry-pi/raspberry-pi-usage)
-* WiringPi Library (`git clone git://git.drogon.net/wiringPi`;Read INSTALL file; NOTE: FindWiringPi.cmake added from
-[here](https://stackoverflow.com/questions/30424236/add-wiringpi-lib-to-cmake-on-raspberrypi))
-* libserial ([GitHub](https://github.com/crayzeewulf/libserial); before trying to build, run `sudo apt-get install build-essential libtool autoconf automake`)
-* Bost (`sudo apt-get install libboost-dev`)
-
-## Other Notes
-* Don't forget to enable the I2C kernel module. (`sudo raspi-config` -> Interfacing Options)
+(Only for partition with active_module=speaker)
 
 ### Developer Notes
 * The file "active_module" needs to be created to allow "onboot" to work properly. At boot, the value in "active_module"
