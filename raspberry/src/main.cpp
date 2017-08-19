@@ -8,11 +8,11 @@ int main(int argc, char* argv[]){
   // Open serial
   string fname;
   if(argc > 1){
-    fname = argc[1];
+    fname = argv[1];
   }else{
     fname = "/dev/ttyUSB0";
   }
-  fstream serial(fname);
+  fstream serial(fname.c_str());
 
   // Verify serial is Open
   if(serial.is_open()){

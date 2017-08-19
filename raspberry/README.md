@@ -13,3 +13,7 @@ continue to run throughout the operation of the drone.
 
 ## Other Notes
 * Don't forget to enable the I2C kernel module. (`sudo raspi-config` -> Interfacing Options)
+
+### Developer Notes
+* The file "active_module" needs to be created to allow "onboot" to work properly. At boot, the value in "active_module"
+is read, and the command `./build/<active_module>` is run.

@@ -1,2 +1,11 @@
-#!/bin/bash
-touch onboot_ran
+#!/usr/bin/python3
+import os
+
+if os.path.exists('active_module'):
+    with open('active_module', 'r') as f:
+        active_module=f.read().strip()
+        os.system("./build/"+active_module)
+else:
+    print("active_module not set. \nTry installing using `sudo ./install`. That should (hopefully) set everything up correctly!") 
+
+
