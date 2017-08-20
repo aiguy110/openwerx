@@ -13,7 +13,7 @@ speakerProc = None
 def startSpeaker():
     global speakerProc
     global speakerFile
-    speakerProc = subprocess.Popen(["mpg123", "-f", "20000", speakerFile], shell=False)
+    speakerProc = subprocess.Popen(["mpg123", "-f", "200000", speakerFile], shell=False)
 
 def stopSpeaker():
     global speakerProc
@@ -29,7 +29,7 @@ def stopSpeaker():
 # partition4 -> paper
 active_module=None
 with open('active_module') as f:
-    active_module = f.read()
+    active_module = f.read().strip()
 
 # Get USB serial port
 port = glob.glob("/dev/ttyUSB*")[0]
