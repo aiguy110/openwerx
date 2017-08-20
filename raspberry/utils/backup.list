@@ -1,0 +1,7 @@
+/boot/cmdline.txt
+/boot/config.txt
+/etc/apt/sources.list
+/etc/inittab
+/etc/modprobe.d/raspi-blacklist.conf
+/etc/modules
+/boot/overlays

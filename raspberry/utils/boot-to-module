@@ -1,0 +1,30 @@
+#!/usr/bin/python3
+import os, sys
+
+# Get module name from command line args
+if len(sys.argv) != 2:
+    print("Wrong number of arguments. Aborting...")
+    print("USAGE:\n> sudo ./rboot-to-module <module-name>\nWhere <module-name> is speaker, transmitter, or paper")
+    exit()
+new_module = sys.argv[1]
+if new_module not in ['speaker', 'transmitter', 'paper']:
+    print("Invalid partion name. Aborting...")
+    exit()
+
+# Rewrte boot?
+with open('active_module', 'r') as f:
+    old_module = f.read().strip()
+
+if new_module == 'speaker' and old_module != 'speaker':
+    os.system("sudo umount /boot")
+    os.system("sudo dd if=./data/bonnet_boot.img of=/mmcblk0p1")
+elif new_module != 'speaker' and old_module == 'speaker':
+    os.system("sudo umount /boot")
+    os.system("sudo dd if=./data/clean_boot.img of=/mmcblk0p1")
+
+# Change active_module
+os.system("echo "+new_module+" > active_module")
+
+# Reboot
+print("Rebooting...")
+os.system("sudo reboot")
