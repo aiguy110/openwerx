@@ -62,14 +62,14 @@ with serial.Serial(port, 19200, timeout=100) as ser:
                 print('Module "speaker" already loaded. Doing nothing.')
             else:
                 print('Booting "speaker" module.')
-                os.system("sudo ./utils/reboot-to-partition 2")
+                os.system("sudo ./utils/reboot-to-partition speaker")
 
         if button2:
             if active_module == 'transmitter':
                 print('Module "transmitter" already loaded. Doing nothing.')
             else:
                 print('Booting "transmitter" module.')
-                os.system("sudo ./utils/reboot-to-partition 3")
+                os.system("sudo ./utils/reboot-to-partition transmitter")
 
 
         # print(val)
