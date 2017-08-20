@@ -40,7 +40,11 @@ with serial.Serial(port, 19200, timeout=100) as ser:
     last_led=None
     while True:
         line = ser.readline()
-        led, button1, button2 = struct.unpack('???x', line)
+        try:
+            led, button1, button2 = struct.unpack('???x', line)
+        except:
+            print("WARNING: Failed to parse line. Ignoring.")
+            continue
 
         # Check main input (the light sensor)
         if last_led is not None and led != last_led:
