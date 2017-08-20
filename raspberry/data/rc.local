@@ -13,6 +13,6 @@
 
 PROJECT_BASE={}
 cd $PROJECT_BASE
-./onboot
+sudo ./onboot &
 
 exit 0
