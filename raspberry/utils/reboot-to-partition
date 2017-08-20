@@ -6,31 +6,11 @@ if len(sys.argv) != 2:
     print("Wrong number of arguments. Aborting...")
     print("USAGE:\n> sudo ./reboot-to-partition <partition-number>\nWhere <partition-number> is 2, 3, or 4 (required for this particular SD partitioning)")
     exit()
-part_num = sys.argv[1]
-if part_num not in ['2', '3', '4']:
-    print("Invalid partion number. Aborting...")
+part_name = sys.argv[1]
+if part_name not in ['speaker', 'transmitter', 'paper']:
+    print("Invalid partion name. Aborting...")
     exit()
 
-# Read in the contents of cmdline.txt
-f = open("/boot/cmdline.txt", "r")
-old_cmd = f.read()
-f.close()
-
-# Find key points in the command
-# ... root=PARTUUID=dd3bb636-02 ...
-#          0123456789         ^
-i0=old_cmd.find('PARTUUID=')
-i1=old_cmd.find(' ', i0)
-
-# Generate new command
-old_uuid = old_cmd[i0+9: i1]
-new_uuid = old_uuid[:-1] + part_num 
-new_cmd = old_cmd[:i0+9] + new_uuid + old_cmd[i1:]
-
-# Write the new command to the file
-f = open("/boot/cmdline.txt", "w")
-f.write(new_cmd)
-f.close()
-
-# Reboot
-os.system("reboot")
+# Rewrite and reboot
+os.system("sudo dd if=./data/"+part_name+"_boot.img of=/mmcblk0p1")
+os.system("sudo reboot")
