@@ -58,7 +58,7 @@ if module_name == 'transmitter':
     with open("/user-data/frequency.txt") as f:
     	freq_str = f.read().strip()
     print('Sending frequency: '+freq_str)
-   	send(freq_str)
+    send(freq_str)
 
 # Main Loop
 last_status = None
