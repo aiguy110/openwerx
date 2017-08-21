@@ -1,4 +1,9 @@
 #!/bin/bash
+
+# Mount the user-data partition in case it is needed
+sudo mkdir /user-data
+sudo mount /dev/mmcblk0p3 /user-data
+
 until sudo python3 src/main.py; do
     echo "main.py' crashed with exit code $?.  Respawning.." >&2
     sleep 5

@@ -54,8 +54,9 @@ send(module_name)
 
 # If this is the transmitter module, send a frequency to broadcast on
 if module_name == 'transmitter':
-    freq_str = sys.argv[1]
-    send('rf,'+freq_str)
+    with open("/user-data/frequency.txt") as f:
+    	freq_str = f.read().strip() 
+   	send(freq_str)
 
 # Main Loop
 last_status = None
@@ -67,7 +68,7 @@ while True:
         if module_name in ['speaker', 'transmitter']:
             if new_status == '1':
                 print('Started sound...')
-                soundplayer_proc = subprocess.Popen(["mpg123", "-f", "200000", 'data/rickastley'], shell=False)
+                soundplayer_proc = subprocess.Popen(["mpg123", "-f", "200000", '/user-data/broadcast.mp3'], shell=False)
             elif new_status == '0':
                 if soundplayer_proc is not None:
                     print("Killed sound.")
