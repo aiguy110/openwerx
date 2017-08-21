@@ -49,6 +49,9 @@ if msg != "hell yeah":
     exit()
 print("Recieved initializaion responce.")
 
+# Inform the Arduino of what module is being run
+send(module_name)
+
 # If this is the transmitter module, send a frequency to broadcast on
 if module_name == 'transmitter':
     freq_str = sys.argv[1]
@@ -59,7 +62,7 @@ last_status = None
 soundplayer_proc = None
 while True:
     new_status = blocking_recv()
-    #print(new_status)
+    print(new_status)
     if last_status is not None and new_status != old_status:
         if module_name in ['speaker', 'transmitter']:
             if new_status == '1':
