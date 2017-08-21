@@ -5,7 +5,7 @@ sudo umount /dev/mmcblk0p3
 sudo mkdir /user-data
 sudo mount /dev/mmcblk0p3 /user-data
 
-until sudo python3 src/main.py; do
+until sudo python3 src/main.py > log; do
     echo "main.py' crashed with exit code $?.  Respawning.." >&2
     sleep 5
 done
