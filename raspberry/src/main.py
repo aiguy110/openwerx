@@ -50,12 +50,14 @@ if msg != "hell yeah":
 print("Recieved initializaion responce.")
 
 # Inform the Arduino of what module is being run
+print("Sending module: "+module_name)
 send(module_name)
 
 # If this is the transmitter module, send a frequency to broadcast on
 if module_name == 'transmitter':
     with open("/user-data/frequency.txt") as f:
-    	freq_str = f.read().strip() 
+    	freq_str = f.read().strip()
+    print('Sending frequency: '+freq_str)
    	send(freq_str)
 
 # Main Loop
@@ -67,10 +69,10 @@ while True:
     if last_status is not None and new_status != old_status:
         if module_name in ['speaker', 'transmitter']:
             if new_status == '1':
-                print('Started sound...')
+                print('Starting sound...')
                 soundplayer_proc = subprocess.Popen(["mpg123", "-f", "200000", '/user-data/broadcast.mp3'], shell=False)
             elif new_status == '0':
                 if soundplayer_proc is not None:
-                    print("Killed sound.")
+                    print("Killing sound.")
                     os.kill(soundplayer_proc.pid, signal.SIGINT)
                     soundplayer_proc = None

@@ -1,6 +1,7 @@
 #!/bin/bash
 
 # Mount the user-data partition in case it is needed
+sudo umount /dev/mmcblk0p3
 sudo mkdir /user-data
 sudo mount /dev/mmcblk0p3 /user-data
 
