@@ -11,6 +11,7 @@ with open('active_module', 'r') as f:
     module_name = f.read().strip()
 
 def send(msg):
+    print("Sending: "+msg )
     global arduino
     arduino.write(b'{')
     arduino.write(msg.encode('ascii'))
@@ -31,18 +32,22 @@ def blocking_recv():
             msg_buffer += c.decode('ascii')
 
 # Initialize Serial
-arduino = serial.Serial('/dev/ttyUSB0', 19200, timeout=5)
+print("Starting serial...")
+arduino = serial.Serial('/dev/ttyUSB0', 19200, timeout=1)
+print("Serial started")
 time.sleep(2) #give the connection a second to settle
 
 # First, send initialization message
 send('bitches')
 
-# Wait for response
+# Well!?
+print("Waiting on initialization response...")
 msg = blocking_recv()
 if msg != "hell yeah":
     # Something is terribly wrong! Time to end it all!
     print('Failed to initialize. Aborting...')
     exit()
+print("Recieved initializaion responce.")
 
 # If this is the transmitter module, send a frequency to broadcast on
 if module_name == 'transmitter':
@@ -54,13 +59,14 @@ last_status = None
 soundplayer_proc = None
 while True:
     new_status = blocking_recv()
+    #print(new_status)
     if last_status is not None and new_status != old_status:
-        if module_name in ['speakers', 'transmitter']:
+        if module_name in ['speaker', 'transmitter']:
             if new_status == '1':
                 print('Started sound...')
                 soundplayer_proc = subprocess.Popen(["mpg123", "-f", "200000", 'data/rickastley'], shell=False)
             elif new_status == '0':
                 if soundplayer_proc is not None:
-                    print("Killed sound.)
+                    print("Killed sound.")
                     os.kill(soundplayer_proc.pid, signal.SIGINT)
                     soundplayer_proc = None
