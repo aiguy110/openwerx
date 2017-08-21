@@ -1,79 +1,66 @@
 #!/usr/bin/python3
-import serial
-import struct
 import subprocess
-import signal
-import os
-import glob
+import serial
+import time
+import sys
 
-# Speaker Stuff
-speakerFile = "data/rickastley.mp3"
-speakerProc = None
+global arduino
 
-def startSpeaker():
-    global speakerProc
-    global speakerFile
-    speakerProc = subprocess.Popen(["mpg123", "-f", "200000", speakerFile], shell=False)
+# Find out which module is active
+with open('active_module', 'r') as f:
+    module_name = f.read().strip()
 
-def stopSpeaker():
-    global speakerProc
-    if speakerProc is not None:
-        pid = speakerProc.pid
-        os.kill(pid, signal.SIGINT)
-        print("Kill Music")
-    speakerProc=None
+def send(msg):
+    global arduino
+    arduino.write(b'{')
+    arduino.write(msg.encode('ascii'))
+    arduino.write(b'}')
 
-# Figure out which mode to be in
-# partition2 -> speaker
-# partition3 -> transmitter
-# partition4 -> paper
-active_module=None
-with open('active_module') as f:
-    active_module = f.read().strip()
+def blocking_recv():
+    global arduino
 
-# Get USB serial port
-port = glob.glob("/dev/ttyUSB*")[0]
-print('Opening serial port "{}"'.format(port))
-
-# Run main loop. Read button inputs.
-with serial.Serial(port, 19200, timeout=100) as ser:
-    last_led=None
+    msg_buffer = ''
+    reading = False
     while True:
-        line = ser.readline()
-        try:
-            led, button1, button2 = struct.unpack('???x', line)
-        except:
-            print("WARNING: Failed to parse line. Ignoring.")
-            continue
+        c = arduino.read()
+        if c == b'{':
+            reading=True
+        elif c==b'}' and reading:
+            return msg_buffer
+        elif reading:
+            msg_buffer += c.decode('ascii')
 
-        # Check main input (the light sensor)
-        if last_led is not None and led != last_led:
-            if led: # This means the lights just turned on
-                print("Lights turned ON")
-                startSpeaker()
-            else:
-                print("Lights turned OFF")
-                stopSpeaker()
-        last_led = led
+# Initialize Serial
+arduino = serial.Serial('/dev/ttyUSB0', 19200, timeout=5)
+time.sleep(2) #give the connection a second to settle
 
-        # Check reset buttons
-        if button1:
-            if active_module == 'speaker':
-                print('Module "speaker" already loaded. Doing nothing.')
-            else:
-                print('Booting "speaker" module.')
-                os.system("sudo ./utils/reboot-to-partition speaker")
+# First, send initialization message
+send('bitches')
 
-        if button2:
-            if active_module == 'transmitter':
-                print('Module "transmitter" already loaded. Doing nothing.')
-            else:
-                print('Booting "transmitter" module.')
-                os.system("sudo ./utils/reboot-to-partition transmitter")
+# Wait for response
+msg = blocking_recv()
+if msg != "hell yeah":
+    # Something is terribly wrong! Time to end it all!
+    print('Failed to initialize. Aborting...')
+    exit()
 
+# If this is the transmitter module, send a frequency to broadcast on
+if module_name == 'transmitter':
+    freq_str = sys.argv[1]
+    send('rf,'+freq_str)
 
-        # print(val)
-        # if val:
-        #     print("Light: ON")
-        # else:
-        #     print("Light: OFF")
+# Main Loop
+last_status = None
+soundplayer_proc = None
+while True:
+    new_status = blocking_recv()
+    if last_status is not None and new_status != old_status:
+        if module_name in ['speakers', 'transmitter']:
+            if new_status == '1':
+                print('Started sound...')
+                soundplayer_proc = subprocess.Popen(["mpg123", "-f", "200000", 'data/rickastley'], shell=False)
+            elif new_status == '0':
+                if soundplayer_proc is not None:
+                    print("Killed sound.)
+                    os.kill(soundplayer_proc.pid, signal.SIGINT)
+                    soundplayer_proc = None
